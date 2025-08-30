@@ -1,49 +1,19 @@
 import React from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "./ui/Card";
 import Button from "./ui/Button";
 import Badge from "./ui/Badge";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { DayPicker } from "react-day-picker";
+import "react-day-picker/dist/style.css";
 
-function Sparkline({ data=[8,12,10,14,13,18,20], width=120, height=40 }) {
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const points = data.map((v,i)=>{
-    const x = (i/(data.length-1))*width;
-    const y = height - ((v-min)/(max-min||1))*height;
-    return `${x},${y}`;
-  }).join(" ");
-  return (
-    <svg width={width} height={height} className="opacity-80">
-      <polyline fill="none" stroke="currentColor" strokeWidth="2" points={points} />
-    </svg>
-  );
-}
-
-function MiniCalendar() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const start = new Date(year, month, 1);
-  const end = new Date(year, month+1, 0);
-  const days = [];
-  const pad = start.getDay(); // 0=Sun
-  for (let i=0; i<pad; i++) days.push(null);
-  for (let d=1; d<=end.getDate(); d++) days.push(d);
-  while (days.length % 7) days.push(null);
-
-  return (
-    <div className="grid grid-cols-7 gap-1 text-xs">
-      {['S','M','T','W','T','F','S'].map((d,i)=>(<div key={i} className="text-center text-slate-500">{d}</div>))}
-      {days.map((d,i)=>{
-        const isToday = d===now.getDate();
-        return (
-          <div key={i} className={`aspect-[1/1] grid place-items-center rounded ${isToday?'bg-indigo-600 text-white':'bg-slate-50'}`}>
-            {d ?? ""}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+const data = [
+  { d:"Mon", bookings: 8, completed:5 },
+  { d:"Tue", bookings: 12, completed:7 },
+  { d:"Wed", bookings: 10, completed:9 },
+  { d:"Thu", bookings: 14, completed:12 },
+  { d:"Fri", bookings: 13, completed:10 },
+  { d:"Sat", bookings: 18, completed:15 },
+  { d:"Sun", bookings: 20, completed:17 },
+];
 
 export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
   const cards = [
@@ -61,52 +31,65 @@ export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
   return (
     <div className="px-4 safe-b pt-16">
       <div className="grid grid-cols-3 gap-3">
-        {cards.map((c,idx) => (
-          <Card key={c.title} className="text-center">
-            <CardHeader>
-              <CardTitle>{c.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{c.value}</div>
-              <div className={`text-xs ${c.delta.startsWith('-')?'text-rose-600':'text-emerald-600'}`}>{c.delta} vs last week</div>
-              <div className="mt-2 text-indigo-600/70"><Sparkline data={[8+idx,12,10,14,13,18,20-idx]} /></div>
-            </CardContent>
-          </Card>
+        {cards.map((c) => (
+          <div key={c.title} className="card p-4 text-center">
+            <div className="text-sm text-slate-600">{c.title}</div>
+            <div className="text-2xl font-bold mt-1">{c.value}</div>
+            <div className={`text-xs mt-0.5 ${c.delta.startsWith('-')?'text-rose-600':'text-emerald-600'}`}>{c.delta} vs last week</div>
+          </div>
         ))}
       </div>
 
-      <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-        <Card className="md:col-span-2">
-          <CardHeader><CardTitle>Upcoming Vouchers</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {(upcoming.length ? upcoming : [
-                { id:"VCH-101", client:"John Smith", date:"2025-09-01", status:"SCHEDULED" },
-                { id:"VCH-102", client:"Alice Doe", date:"2025-09-02", status:"SCHEDULED" },
-              ]).map(v => (
-                <div key={v.id} className="rounded-xl border border-slate-200 bg-white p-3 flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{v.client}</div>
-                    <div className="text-xs text-slate-500">{v.date}</div>
-                  </div>
-                  <Badge color="blue">{v.status}</Badge>
+      <div className="card p-3 mt-4">
+        <div className="flex items-center justify-between px-1">
+          <div className="text-sm font-medium text-slate-800">Weekly Bookings</div>
+        </div>
+        <div style={{height: 180}} className="mt-1">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--brand)" stopOpacity={0.25}/>
+                  <stop offset="95%" stopColor="var(--brand)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#eef2f6" />
+              <XAxis dataKey="d" tickLine={false} axisLine={false} />
+              <YAxis hide />
+              <Tooltip />
+              <Area type="monotone" dataKey="bookings" stroke="var(--brand)" fill="url(#g1)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+        <div className="card p-4">
+          <div className="text-sm font-medium text-slate-800">Upcoming Vouchers</div>
+          <div className="space-y-2 mt-2">
+            {(upcoming.length ? upcoming : [
+              { id:"VCH-101", client:"John Smith", date:"2025-09-01", status:"SCHEDULED" },
+              { id:"VCH-102", client:"Alice Doe", date:"2025-09-02", status:"SCHEDULED" },
+            ]).map(v => (
+              <div key={v.id} className="rounded-xl border border-slate-200 bg-white p-3 flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{v.client}</div>
+                  <div className="text-xs text-slate-500">{v.date}</div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>Calendar</CardTitle></CardHeader>
-          <CardContent><MiniCalendar /></CardContent>
-        </Card>
+                <Badge color="blue">{v.status}</Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card p-2">
+          <DayPicker mode="single" defaultMonth={new Date()} styles={{ caption:{ color:'var(--ink)' }, day_selected:{ background:'var(--brand)', color:'#fff' } }} />
+        </div>
       </div>
 
       <div className="mt-5">
         <h2 className="text-sm font-medium text-slate-700 mb-2">Quick links</h2>
         <div className="flex flex-wrap gap-3">
-          {quick.map(q => (
-            <Button key={q.key} onClick={()=>onQuickLink?.(q.key)}>{q.label}</Button>
-          ))}
+          {quick.map(q => (<Button key={q.key} onClick={()=>onQuickLink?.(q.key)}>{q.label}</Button>))}
         </div>
       </div>
     </div>

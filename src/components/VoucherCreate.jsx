@@ -1,14 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import Input from "./ui/Input";
 import Select from "./ui/Select";
 import Button from "./ui/Button";
 
 export default function VoucherCreate({ drivers=[], onSave, onCancel }) {
-  const [form, setForm] = useState({
+  const [form, setForm] = React.useState({
     clientName:'', clientPhone:'', packageName:'', paxCount:1, price:0, paymentStatus:'UNPAID', bookingDate:'', pickupTime:'', pickupLocation:'', driverId:'', notes:''
   });
   const update = (k,v)=>setForm({...form,[k]:v});
-
   const valid = form.clientName && form.clientPhone && form.packageName && form.bookingDate;
 
   return (
@@ -25,12 +24,12 @@ export default function VoucherCreate({ drivers=[], onSave, onCancel }) {
         <Input label="Pickup Location" value={form.pickupLocation} onChange={e=>update('pickupLocation', e.target.value)} />
         <Select label="Driver" value={form.driverId} onChange={e=>update('driverId', e.target.value)} options={[{value:'',label:'Unassigned'}, ...drivers.map(d=>({value:d.id,label:d.name}))]} />
         <label className="block">
-          <span className="block mb-1 text-sm font-medium text-slate-700 dark:text-slate-200">Notes</span>
-          <textarea className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-2.5" rows={3} value={form.notes} onChange={e=>update('notes', e.target.value)} />
+          <span className="block mb-1 text-sm font-medium text-slate-700">Notes</span>
+          <textarea className="w-full rounded-2xl border border-slate-300 bg-white px-4 py-2.5" rows={3} value={form.notes} onChange={e=>update('notes', e.target.value)} />
         </label>
         <div className="flex gap-3 pt-2">
           <Button disabled={!valid} onClick={()=>onSave?.(form)}>Save</Button>
-          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button variant="outline" onClick={onCancel}>Cancel</Button>
         </div>
       </div>
     </div>

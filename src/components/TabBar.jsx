@@ -11,10 +11,10 @@ const tabs = [
 
 export default function TabBar({ current, onChange }) {
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 tabbar-safe">
+    <nav className="fixed bottom-0 inset-x-0 z-40 tabbar">
       <div className="grid grid-cols-5">
         {tabs.map(({key,label,Icon}) => (
-          <button key={key} onClick={() => onChange(key)} className={`py-2.5 flex flex-col items-center gap-1 ${current===key?'text-indigo-600':'text-slate-600 dark:text-slate-300'}`}>
+          <button key={key} onClick={() => onChange(key)} className={`py-2.5 flex flex-col items-center gap-1 ${current===key?'text-[color:var(--brand)]':'text-slate-600'}`}>
             <Icon size={22} />
             <span className="text-[11px]">{label}</span>
           </button>

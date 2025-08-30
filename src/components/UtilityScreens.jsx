@@ -16,7 +16,7 @@ export function NetworkError({ onRetry }) {
 export function SessionExpired({ onRelogin }) {
   return (
     <div className="fixed inset-0 bg-black/50 grid place-items-center">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-sm text-center">
+      <div className="bg-white rounded-2xl p-6 max-w-sm text-center">
         <h2 className="font-semibold text-lg">Session expired</h2>
         <p className="text-slate-500 mt-1">Please log in again to continue.</p>
         <Button className="mt-4" onClick={onRelogin}>Log In</Button>

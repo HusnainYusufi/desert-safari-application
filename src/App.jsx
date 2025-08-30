@@ -15,7 +15,6 @@ import DriverForm from "./components/DriverForm";
 import VouchersList from "./components/VouchersList";
 import VoucherCreate from "./components/VoucherCreate";
 import VoucherDetails from "./components/VoucherDetails";
-import VoucherEdit from "./components/VoucherEdit";
 import Scan from "./components/Scan";
 import CalendarSummary from "./components/CalendarSummary";
 import PaymentsList from "./components/PaymentsList";
@@ -24,13 +23,11 @@ import PaymentDetails from "./components/PaymentDetails";
 import Toast from "./components/ui/Toast";
 
 export default function App() {
-  // Simple in-memory router/state.
   const [boot, setBoot] = useState(true);
   const [auth, setAuth] = useState(null);
-  const [screen, setScreen] = useState("home"); // current tab or screen key
+  const [screen, setScreen] = useState("home");
   const [toast, setToast] = useState({ open:false, message:'', type:'success' });
 
-  // Mock data
   const [drivers, setDrivers] = useState([
     { id:"D01", name:"Omar Khan", phone:"+97150123456", active:true },
     { id:"D02", name:"Sara Ali", phone:"+97150765432", active:true },
@@ -46,14 +43,15 @@ export default function App() {
   const [selected, setSelected] = useState({ voucher:null, payment:null, driver:null });
 
   useEffect(() => {
-    // Force LTR + Light mode
+    // Force LTR + light
     document.documentElement.setAttribute('dir','ltr');
     document.body.setAttribute('dir','ltr');
     document.documentElement.classList.remove('dark');
     document.body.classList.remove('dark');
     document.documentElement.style.colorScheme='light';
-    // Splash then check token (static)
-    const t = setTimeout(() => setBoot(false), 900);
+
+    // Splash timing
+    const t = setTimeout(() => setBoot(false), 1600);
     return () => clearTimeout(t);
   }, []);
 
@@ -64,61 +62,48 @@ export default function App() {
 
   if (boot) return <Splash />;
 
-  // Auth flow
   if (!auth) {
     if (screen === "forgot") return <ForgotPassword onBack={()=>setScreen("login")} onSent={()=>setScreen("login")} />;
     if (screen === "reset") return <ResetPassword onReset={()=>setScreen("login")} onCancel={()=>setScreen("login")} />;
     return <Login onLogin={(u)=>{ setAuth({ name:"Vendor Admin", email:u.email }); setScreen("home"); }} onForgot={()=>setScreen("forgot")} />;
   }
 
-  // Layout with navbar + tabs
   return (
-    <div className="min-h-screen bg-slate-50" style={{colorScheme:'light'}}>
-      <Navbar title="LEGEND DELIVERY" />
-      {/* Screens that are not tabs could be conditionally rendered here via screen keys */}
+    <div className="min-h-screen bg-slate-50">
+      <Navbar title="DESERT SAFARI" />
 
-      {screen === "home" && <>
-        <HomeDashboard onQuickLink={(key)=>{
-          if (key==='voucher-create') setScreen('voucher-create');
-          if (key==='scan') setScreen('scan');
-          if (key==='calendar') setScreen('calendar');
-        }} />
-      </>}
+      {screen === "home" && <HomeDashboard onQuickLink={(key)=>{
+        if (key==='voucher-create') setScreen('voucher-create');
+        if (key==='scan') setScreen('scan');
+        if (key==='calendar') setScreen('calendar');
+      }} />}
 
-      {screen === "vouchers" && <>
-        <VouchersList
-          vouchers={vouchers}
-          drivers={drivers}
-          onCreate={()=>setScreen('voucher-create')}
-          onOpen={(v)=>{ setSelected(s=>({...s, voucher:v})); setScreen('voucher-details'); }}
-          onExport={(fmt)=>notify(`Exported ${fmt.toUpperCase()}`)}
-        />
-      </>}
+      {screen === "vouchers" && <VouchersList
+        vouchers={vouchers}
+        drivers={drivers}
+        onCreate={()=>setScreen('voucher-create')}
+        onOpen={(v)=>{ setSelected(s=>({...s, voucher:v})); setScreen('voucher-details'); }}
+        onExport={(fmt)=>notify(`Exported ${fmt.toUpperCase()}`)}
+      />}
 
-      {screen === "drivers" && <>
-        <DriversList
-          drivers={drivers}
-          onAdd={()=>{ setSelected({driver:null}); setScreen('driver-create'); }}
-          onEdit={(d)=>{ setSelected({driver:d}); setScreen('driver-edit'); }}
-        />
-      </>}
+      {screen === "drivers" && <DriversList
+        drivers={drivers}
+        onAdd={()=>{ setSelected({driver:null}); setScreen('driver-create'); }}
+        onEdit={(d)=>{ setSelected({driver:d}); setScreen('driver-edit'); }}
+      />}
 
-      {screen === "payments" && <>
-        <PaymentsList
-          payments={payments}
-          onCreate={()=>setScreen('submit-payment')}
-          onOpen={(p)=>{ setSelected({payment:p}); setScreen('payment-details'); }}
-          onExport={(what)=>notify(`${what==='xlsx'?'Excel':'PDF'} ready`)}
-        />
-      </>}
+      {screen === "payments" && <PaymentsList
+        payments={payments}
+        onCreate={()=>setScreen('submit-payment')}
+        onOpen={(p)=>{ setSelected({payment:p}); setScreen('payment-details'); }}
+        onExport={(what)=>notify(`${what==='xlsx'?'Excel':'PDF'} ready`)}
+      />}
 
-      {screen === "account" && <>
-        <Account
-          user={auth}
-          onChangePassword={()=>setScreen('change-password')}
-          onLogout={()=>{ setAuth(null); setScreen('login'); }}
-        />
-      </>}
+      {screen === "account" && <Account
+        user={auth}
+        onChangePassword={()=>setScreen('change-password')}
+        onLogout={()=>{ setAuth(null); setScreen('login'); }}
+      />}
 
       {screen === "company" && <MyCompany onSave={()=>{ notify('Company saved'); setScreen('home'); }} onCancel={()=>setScreen('home')} />}
       {screen === "change-password" && <ChangePassword onUpdate={()=>{ notify('Password updated'); setScreen('account'); }} onCancel={()=>setScreen('account')} />}

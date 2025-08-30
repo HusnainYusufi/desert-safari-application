@@ -1,5 +1,51 @@
-:root { color-scheme: light; }
+:root{
+  /* Desert palette */
+  --brand:#C97A2B;          /* primary desert */
+  --brand-600:#B86D22;
+  --brand-700:#9F5E1E;
+  --brand-50:#FFF7EC;
+  --ink:#0F172A;            /* slate-900 */
+  --ink-2:#475569;          /* slate-600 */
+  --bg:#FFFFFF;
+  --sand:#F6E9D5;
+  --card:#FFFFFF;
+  --border:#E2E8F0;
+  --success:#10B981;
+  --warn:#F59E0B;
+  --danger:#EF4444;
+
+  --tabbar-h:64px;
+}
+@media (min-width: 768px){ :root{ --tabbar-h:68px; } }
+
 html, body, #root { direction: ltr !important; }
-* { text-align: left; }
-.safe-b { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
-.tabbar-safe { padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); }
+html, body, #root { color-scheme: light; background: var(--bg); }
+
+/* App layout helpers */
+.safe-b { padding-bottom: calc(var(--tabbar-h) + max(28px, env(safe-area-inset-bottom, 0px))); }
+.tabbar {
+  height: var(--tabbar-h);
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(6px);
+  border-top: 1px solid var(--border);
+}
+
+/* Desert accents */
+.desert-header { background: linear-gradient(180deg, var(--sand), #fff 60%); }
+.desert-primary { background: var(--brand); color: #fff; }
+.desert-primary:hover{ background: var(--brand-600); }
+.desert-outline { border: 1px solid var(--border); background: #fff; color: var(--ink); }
+.desert-link { color: var(--brand); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+/* Splash */
+@keyframes splashFadeIn { 0%{opacity:0;transform:scale(0.98);} 100%{opacity:1;transform:scale(1);} }
+@keyframes logoPop { 0%{transform:translateY(8px);opacity:0;} 100%{transform:translateY(0);opacity:1;} }
+.splash-screen { animation: splashFadeIn 900ms ease-out forwards; }
+.logo-pop { animation: logoPop 700ms 150ms ease-out both; }
