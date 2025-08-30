@@ -1,6 +1,6 @@
 import React from "react";
-import Button from "./ui/Button";
 import Badge from "./ui/Badge";
+import Button from "./ui/Button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
@@ -29,7 +29,8 @@ export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
   ];
 
   return (
-    <div className="px-4 safe-b pt-16">
+    <div className="px-4 pt-16 safe-b">
+      {/* Stats */}
       <div className="grid grid-cols-3 gap-3">
         {cards.map((c) => (
           <div key={c.title} className="card p-4 text-center">
@@ -40,6 +41,7 @@ export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
         ))}
       </div>
 
+      {/* Chart */}
       <div className="card p-3 mt-4">
         <div className="flex items-center justify-between px-1">
           <div className="text-sm font-medium text-slate-800">Weekly Bookings</div>
@@ -63,6 +65,7 @@ export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
         </div>
       </div>
 
+      {/* Upcoming + Calendar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
         <div className="card p-4">
           <div className="text-sm font-medium text-slate-800">Upcoming Vouchers</div>
@@ -82,14 +85,28 @@ export default function HomeDashboard({ onQuickLink, upcoming=[] }) {
           </div>
         </div>
         <div className="card p-2">
-          <DayPicker mode="single" defaultMonth={new Date()} styles={{ caption:{ color:'var(--ink)' }, day_selected:{ background:'var(--brand)', color:'#fff' } }} />
+          <DayPicker
+            mode="single"
+            defaultMonth={new Date()}
+            className="rdp-desert"
+            styles={{
+              caption: { color: 'var(--ink)' },
+              head_cell: { color: 'var(--ink-2)', fontWeight: 600 },
+              day: { color: 'var(--ink)' },
+              day_selected: { background: 'var(--brand)', color: '#fff' },
+              day_today: { borderColor: 'var(--brand-600)' },
+            }}
+          />
         </div>
       </div>
 
+      {/* Quick Links */}
       <div className="mt-5">
         <h2 className="text-sm font-medium text-slate-700 mb-2">Quick links</h2>
         <div className="flex flex-wrap gap-3">
-          {quick.map(q => (<Button key={q.key} onClick={()=>onQuickLink?.(q.key)}>{q.label}</Button>))}
+          {quick.map(q => (
+            <Button key={q.key} onClick={()=>onQuickLink?.(q.key)}>{q.label}</Button>
+          ))}
         </div>
       </div>
     </div>

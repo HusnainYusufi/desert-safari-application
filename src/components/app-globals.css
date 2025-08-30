@@ -1,10 +1,16 @@
 :root{
+  /* Desert palette */
   --brand:#C97A2B; --brand-600:#B86D22; --brand-700:#9F5E1E; --brand-50:#FFF7EC;
   --ink:#0F172A; --ink-2:#475569; --bg:#FFFFFF; --sand:#F6E9D5; --card:#FFFFFF; --border:#E2E8F0;
   --success:#10B981; --warn:#F59E0B; --danger:#EF4444;
+
+  /* Layout */
   --tabbar-h:64px;
+
+  /* Safe areas from CSS env and JS fallback */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-bottom-js: 0px; /* populated by App.jsx using visualViewport */
 }
 @media (min-width: 768px){ :root{ --tabbar-h:68px; } }
 
@@ -12,12 +18,12 @@ html, body, #root { direction: ltr !important; color-scheme: light; background: 
 
 /* Safe area helpers */
 .safe-t { padding-top: calc(12px + var(--safe-top)); }
-.safe-b { padding-bottom: calc(var(--tabbar-h) + max(32px, var(--safe-bottom))); }
+.safe-b { padding-bottom: calc(var(--tabbar-h) + max(56px, var(--safe-bottom), var(--safe-bottom-js))); }
 
-/* Tab bar with safe bottom */
+/* Tab bar with safe bottom (prevents overlap with Android nav/gesture bar) */
 .tabbar {
-  height: calc(var(--tabbar-h) + max(8px, var(--safe-bottom)));
-  padding-bottom: max(10px, var(--safe-bottom));
+  height: calc(var(--tabbar-h) + max(14px, var(--safe-bottom), var(--safe-bottom-js)));
+  padding-bottom: max(14px, var(--safe-bottom), var(--safe-bottom-js));
   background: rgba(255,255,255,0.96);
   backdrop-filter: blur(6px);
   border-top: 1px solid var(--border);
@@ -30,9 +36,19 @@ html, body, #root { direction: ltr !important; color-scheme: light; background: 
 .desert-outline { border: 1px solid var(--border); background: #fff; color: var(--ink); }
 .desert-link { color: var(--brand); }
 
+/* Lightweight card look */
 .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; }
 
-/* Splash */
+/* DayPicker (make visible on white) */
+.rdp-desert { --rdp-accent-color: var(--brand); --rdp-background-color: var(--brand-50); }
+.rdp-desert .rdp { background: var(--brand-50); border-radius: 16px; padding: 6px; }
+.rdp-desert .rdp-caption_label { color: var(--ink); font-weight: 600; }
+.rdp-desert .rdp-head_cell { color: var(--ink-2); font-weight: 600; }
+.rdp-desert .rdp-day { color: var(--ink); }
+.rdp-desert .rdp-day_selected { background: var(--brand) !important; color: #fff !important; }
+.rdp-desert .rdp-day_today { outline: 2px solid var(--brand-600); }
+
+/* Splash (kept for completeness; framer-motion handles main anim) */
 @keyframes splashIn { 0%{opacity:0;transform:scale(0.9);} 100%{opacity:1;transform:scale(1);} }
 @keyframes whoosh { 0%{transform:scale(0.92);} 70%{transform:scale(1.1);} 100%{transform:scale(1);} }
 .splash-screen { animation: splashIn 700ms ease-out both; }

@@ -1,27 +1,34 @@
 import React, { useEffect, useState } from "react";
 import "./components/app-globals.css";
 import { Capacitor } from "@capacitor/core";
-import { StatusBar, Style } from "@capacitor/status-bar";
+
 import Navbar from "./components/Navbar";
 import TabBar from "./components/TabBar";
 import Splash from "./components/Splash";
+
 import Login from "./components/Login";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+
 import HomeDashboard from "./components/HomeDashboard";
 import MyCompany from "./components/MyCompany";
 import Account from "./components/Account";
 import ChangePassword from "./components/ChangePassword";
+
 import DriversList from "./components/DriversList";
 import DriverForm from "./components/DriverForm";
+
 import VouchersList from "./components/VouchersList";
 import VoucherCreate from "./components/VoucherCreate";
 import VoucherDetails from "./components/VoucherDetails";
+
 import Scan from "./components/Scan";
 import CalendarSummary from "./components/CalendarSummary";
+
 import PaymentsList from "./components/PaymentsList";
 import SubmitPayment from "./components/SubmitPayment";
 import PaymentDetails from "./components/PaymentDetails";
+
 import Toast from "./components/ui/Toast";
 
 export default function App() {
@@ -52,20 +59,41 @@ export default function App() {
     document.body.classList.remove('dark');
     document.documentElement.style.colorScheme='light';
 
-    // Status bar: avoid hole-punch overlay by not overlaying the WebView
-    const platform = Capacitor.getPlatform();
-    if (platform !== 'web') {
-      try {
-        StatusBar.setOverlaysWebView({ overlay: false });
-        StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#F6E9D5' }); // sand
-      } catch (e) { /* noop */ }
+    // JS fallback for bottom inset (for devices that don't expose CSS env())
+    const applyInsets = () => {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      // bottom gap between layout viewport and visual viewport
+      const bottomGap = Math.max(0, (window.innerHeight - vv.height - vv.offsetTop));
+      document.documentElement.style.setProperty('--safe-bottom-js', `${Math.round(bottomGap)}px`);
+    };
+    applyInsets();
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', applyInsets);
+      window.visualViewport.addEventListener('scroll', applyInsets);
     }
+
+    // Status bar (lazy import; works with Capacitor v6 plugin)
+    try {
+      if (Capacitor.getPlatform() !== "web") {
+        import("@capacitor/status-bar").then(({ StatusBar, Style }) => {
+          StatusBar.setOverlaysWebView({ overlay: false });          // avoid header below punch hole
+          StatusBar.setStyle({ style: Style.Dark });
+          StatusBar.setBackgroundColor({ color: "#F6E9D5" });        // desert sand
+        }).catch(() => {});
+      }
+    } catch {}
 
     // Splash timing
     const t = setTimeout(() => setBoot(false), 1700);
-    return () => clearTimeout(t);
-  }, []);
+    return () => {
+      clearTimeout(t);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', applyInsets);
+        window.visualViewport.removeEventListener('scroll', applyInsets);
+      }
+    };
+  }, [Capacitor]);
 
   const notify = (message, type='success') => {
     setToast({ open:true, message, type });
@@ -83,7 +111,8 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50">
       <Navbar title="DESERT SAFARI" />
-      <main className="safe-b" style={{paddingTop:"calc(56px + var(--safe-top))"}}>
+      {/* Safe top (header) + safe bottom (tab bar / system nav) */}
+      <main className="safe-b" style={{ paddingTop: "calc(56px + var(--safe-top))" }}>
         {screen === "home" && <HomeDashboard onQuickLink={(key)=>{
           if (key==='voucher-create') setScreen('voucher-create');
           if (key==='scan') setScreen('scan');
@@ -119,16 +148,42 @@ export default function App() {
 
         {screen === "company" && <MyCompany onSave={()=>{ notify('Company saved'); setScreen('home'); }} onCancel={()=>setScreen('home')} />}
         {screen === "change-password" && <ChangePassword onUpdate={()=>{ notify('Password updated'); setScreen('account'); }} onCancel={()=>setScreen('account')} />}
+
         {screen === "driver-create" && <DriverForm onSave={(d)=>{ setDrivers(ds=>[...ds, {...d, id:'D'+(ds.length+1)}]); notify('Driver saved'); setScreen('drivers'); }} onCancel={()=>setScreen('drivers')} />}
         {screen === "driver-edit" && <DriverForm initial={selected.driver} onSave={(d)=>{ setDrivers(ds=>ds.map(x=>x.id===selected.driver.id?{...x, ...d}:x)); notify('Driver updated'); setScreen('drivers'); }} onDelete={()=>{ setDrivers(ds=>ds.filter(x=>x.id!==selected.driver.id)); notify('Driver deleted'); setScreen('drivers'); }} onCancel={()=>setScreen('drivers')} />}
+
         {screen === "voucher-create" && <VoucherCreate drivers={drivers} onSave={(f)=>{ const v={ id:`VCH-${Math.floor(Math.random()*9000)+1000}`, ...f, date:f.bookingDate, status:'SCHEDULED' }; setVouchers(vs=>[v, ...vs]); setSelected({voucher:v}); notify('Voucher created'); setScreen('voucher-details'); }} onCancel={()=>setScreen('vouchers')} />}
-        {screen === "voucher-details" && <VoucherDetails voucher={selected.voucher} driverName={drivers.find(d=>d.id===selected.voucher?.driverId)?.name} onOpenPdf={()=>notify('Opening PDF')} onShareEmail={()=>notify('Email sent')} onRegeneratePdf={()=>notify('PDF regenerated')} onEdit={()=>setScreen('voucher-edit')} />}
-        {screen === "voucher-edit" && <VoucherCreate drivers={drivers} onSave={(f)=>{ setVouchers(vs=>vs.map(v=>v.id===selected.voucher.id?{...v, ...f, date:f.bookingDate}:v)); notify('Voucher updated'); setScreen('voucher-details'); }} onCancel={()=>setScreen('voucher-details')} />}
+
+        {screen === "voucher-details" && <VoucherDetails
+          voucher={selected.voucher}
+          driverName={drivers.find(d=>d.id===selected.voucher?.driverId)?.name}
+          onOpenPdf={()=>notify('Opening PDF')}
+          onShareEmail={()=>notify('Email sent')}
+          onRegeneratePdf={()=>notify('PDF regenerated')}
+          onEdit={()=>setScreen('voucher-edit')}
+        />}
+
+        {screen === "voucher-edit" && <VoucherCreate
+          drivers={drivers}
+          onSave={(f)=>{ setVouchers(vs=>vs.map(v=>v.id===selected.voucher.id?{...v, ...f, date:f.bookingDate}:v)); notify('Voucher updated'); setScreen('voucher-details'); }}
+          onCancel={()=>setScreen('voucher-details')}
+        />}
+
         {screen === "scan" && <Scan />}
         {screen === "calendar" && <CalendarSummary drivers={drivers} onOpenFor={(d,date)=>{ setScreen('vouchers'); }} />}
-        {screen === "submit-payment" && <SubmitPayment onSubmit={(f)=>{ const p={ id:`PAY-${Math.floor(Math.random()*9000)+1000}`, type:f.method, amount:Number(f.amount), status:'PENDING', created:new Date().toISOString().slice(0,10), reference:f.reference }; setPayments(ps=>[p, ...ps]); setSelected({payment:p}); notify('Payment submitted'); setScreen('payment-details'); }} onCancel={()=>setScreen('payments')} />}
-        {screen === "payment-details" && <PaymentDetails payment={selected.payment} onEdit={()=>setScreen('submit-payment')} onOpenStatement={()=>notify('Opening Statement PDF')} />}
+
+        {screen === "submit-payment" && <SubmitPayment
+          onSubmit={(f)=>{ const p={ id:`PAY-${Math.floor(Math.random()*9000)+1000}`, type:f.method, amount:Number(f.amount), status:'PENDING', created:new Date().toISOString().slice(0,10), reference:f.reference }; setPayments(ps=>[p, ...ps]); setSelected({payment:p}); notify('Payment submitted'); setScreen('payment-details'); }}
+          onCancel={()=>setScreen('payments')}
+        />}
+
+        {screen === "payment-details" && <PaymentDetails
+          payment={selected.payment}
+          onEdit={()=>setScreen('submit-payment')}
+          onOpenStatement={()=>notify('Opening Statement PDF')}
+        />}
       </main>
+
       <TabBar current={['home','vouchers','drivers','payments','account'].includes(screen) ? screen : 'home'} onChange={(key)=>setScreen(key)} />
       <Toast open={toast.open} message={toast.message} type={toast.type} />
     </div>

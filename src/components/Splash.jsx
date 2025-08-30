@@ -4,7 +4,11 @@ import "./app-globals.css";
 
 export default function Splash() {
   const [show, setShow] = useState(true);
-  useEffect(()=>{ const t = setTimeout(()=>setShow(false), 1400); return ()=>clearTimeout(t); },[]);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(false), 1400);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <AnimatePresence>
       {show && (
