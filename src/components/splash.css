@@ -1,0 +1,14 @@
+@keyframes splashFadeIn {
+  0% { opacity: 0; transform: scale(0.96); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes logoPop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.splash-screen {
+  animation: splashFadeIn 900ms ease-out forwards;
+}
+.logo-pop {
+  animation: logoPop 600ms 200ms ease-out both;
+}

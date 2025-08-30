@@ -12,7 +12,7 @@ export default function VoucherCreate({ drivers=[], onSave, onCancel }) {
   const valid = form.clientName && form.clientPhone && form.packageName && form.bookingDate;
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="max-w-xl space-y-3">
         <Input label="Client Name" value={form.clientName} onChange={e=>update('clientName', e.target.value)} />
         <Input label="Client Phone" value={form.clientPhone} onChange={e=>update('clientPhone', e.target.value)} />

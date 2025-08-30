@@ -16,7 +16,7 @@ export default function SubmitPayment({ onSubmit, onCancel }) {
   const valid = form.amount && form.periodStart && form.periodEnd;
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="max-w-xl space-y-3">
         <Input label="Amount" type="number" value={form.amount} onChange={e=>update('amount', e.target.value)} />
         <Select label="Currency" value={form.currency} onChange={e=>update('currency', e.target.value)} options={['AED','USD','EUR']} />

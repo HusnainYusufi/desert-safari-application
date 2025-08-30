@@ -8,7 +8,7 @@ export default function ChangePassword({ onUpdate, onCancel }) {
   const [p2, setP2] = useState("");
   const valid = p1.length>=8 && p1===p2 && oldP.length>0;
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="max-w-md">
         <Input label="Old password" type="password" value={oldP} onChange={e=>setOldP(e.target.value)} />
         <Input className="mt-3" label="New password" type="password" value={p1} onChange={e=>setP1(e.target.value)} hint="Minimum 8 characters" />

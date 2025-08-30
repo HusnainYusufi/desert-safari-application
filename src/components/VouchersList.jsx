@@ -15,7 +15,7 @@ export default function VouchersList({ vouchers=[], drivers=[], onCreate, onOpen
   const filtered = vouchers.filter(v => (!status || v.status===status) && (!driverId || v.driverId===driverId) && (!from || v.date>=from) && (!to || v.date<=to));
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <label className="flex items-end gap-2">

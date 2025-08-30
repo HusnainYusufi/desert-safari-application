@@ -7,7 +7,7 @@ const QR = () => <div className="h-32 w-32 bg-slate-200 dark:bg-slate-800 grid p
 export default function VoucherDetails({ voucher, driverName, onOpenPdf, onShareEmail, onRegeneratePdf, onEdit }) {
   if (!voucher) return null;
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div className="flex items-center justify-between">
           <div>

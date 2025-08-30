@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./components/app-globals.css";
 import Navbar from "./components/Navbar";
 import TabBar from "./components/TabBar";
 import Splash from "./components/Splash";
@@ -45,6 +46,12 @@ export default function App() {
   const [selected, setSelected] = useState({ voucher:null, payment:null, driver:null });
 
   useEffect(() => {
+    // Force LTR + Light mode
+    document.documentElement.setAttribute('dir','ltr');
+    document.body.setAttribute('dir','ltr');
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
+    document.documentElement.style.colorScheme='light';
     // Splash then check token (static)
     const t = setTimeout(() => setBoot(false), 900);
     return () => clearTimeout(t);
@@ -66,7 +73,7 @@ export default function App() {
 
   // Layout with navbar + tabs
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50" style={{colorScheme:'light'}}>
       <Navbar title="LEGEND DELIVERY" />
       {/* Screens that are not tabs could be conditionally rendered here via screen keys */}
 

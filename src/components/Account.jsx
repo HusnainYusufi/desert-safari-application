@@ -3,7 +3,7 @@ import Button from "./ui/Button";
 
 export default function Account({ user, onChangePassword, onLogout }) {
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div className="flex items-center gap-3">
           <div className="h-12 w-12 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">

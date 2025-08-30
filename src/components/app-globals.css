@@ -1,0 +1,5 @@
+:root { color-scheme: light; }
+html, body, #root { direction: ltr !important; }
+* { text-align: left; }
+.safe-b { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.tabbar-safe { padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); }

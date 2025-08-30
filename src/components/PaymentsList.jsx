@@ -12,7 +12,7 @@ export default function PaymentsList({ payments=[], onCreate, onOpen, onExport }
   const filtered = payments.filter(p => (!status || p.status===status) && (!type || p.type===type) && (!from || p.created>=from) && (!to || p.created<=to));
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <Select label="Status" options={[{value:'',label:'All'},{value:'PENDING',label:'Pending'},{value:'CONFIRMED',label:'Confirmed'}]} value={status} onChange={e=>setStatus(e.target.value)} />

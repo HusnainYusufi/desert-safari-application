@@ -5,7 +5,7 @@ export default function CalendarSummary({ drivers=[], onOpenFor }) {
   const [date, setDate] = useState(() => new Date().toISOString().slice(0,10));
   const data = drivers.map(d => ({...d, count: Math.floor(Math.random()*5)}));
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="flex items-center gap-3">
         <input type="date" className="rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2" value={date} onChange={e=>setDate(e.target.value)} />
       </div>

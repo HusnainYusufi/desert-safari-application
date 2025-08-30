@@ -16,7 +16,7 @@ export default function MyCompany({ initial, onSave, onCancel }) {
   };
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <Card>
         <CardHeader><CardTitle>My Company</CardTitle></CardHeader>
         <CardContent>

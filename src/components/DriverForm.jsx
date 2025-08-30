@@ -8,7 +8,7 @@ export default function DriverForm({ initial, onSave, onCancel, onDelete }) {
   const isEditing = !!initial;
 
   return (
-    <div className="px-4 pb-24 pt-16">
+    <div className="px-4 safe-b pt-16">
       <div className="max-w-md space-y-3">
         <Input label="Name" value={form.name} onChange={e=>update('name', e.target.value)} />
         <Input label="Phone" value={form.phone} onChange={e=>update('phone', e.target.value)} />
